@@ -1,0 +1,94 @@
+ ================================================================================
+# MongoDB ETL Project - Konfiguracja Środowiska
+# ================================================================================
+# Ten plik to TEMPLATE - skopiuj do .env i dostosuj do swoich danych
+# NIGDY nie pushuj rzeczywistego .env na GitHub (pokaż hasło!)
+
+# ================================================================================
+# MONGODB ATLAS
+# ================================================================================
+
+# Connection String dla MongoDB Atlas
+# Format: mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
+# Pobierz z: Atlas > Connect > Drivers > Connection String
+MONGODB_URI=mongodb+srv://janduczek_db_user:B2LTZ7stECMF2jg8@dev-cluster.cuerdh8.mongodb.net/?appName=dev-cluster
+
+# Nazwa bazy danych
+DATABASE_NAME=analytics
+
+# Nazwa kolekcji
+COLLECTION_NAME=records
+
+# ================================================================================
+# ETL - ŚCIEŻKI CSV
+# ================================================================================
+
+# Źródło 1: Online Retail Dataset (541k rekordów)
+CSV_FILE_1=data/online_retail.csv
+
+# Źródło 2: Sales Data (21 rekordów)
+CSV_FILE_2=data/sales_data.csv
+
+# Źródło 3: Customers (8 rekordów)
+CSV_FILE_3=data/customers.csv
+
+# ================================================================================
+# ETL - PARAMETRY ŁADOWANIA
+# ================================================================================
+
+# Rozmiar batcha przy ładowaniu (rekomendacja: 5000)
+# Większy batch = szybciej ale więcej RAM
+BATCH_SIZE=5000
+
+# Rozmiar chunka przy czytaniu CSV (rekomendacja: 50000)
+# Większy chunk = szybciej ale więcej RAM
+CHUNK_SIZE=50000
+
+# ================================================================================
+# LOGGING
+# ================================================================================
+
+# Poziom logowania: debug, info, warn, error
+LOG_LEVEL=info
+
+# ================================================================================
+# SCHEDULER
+# ================================================================================
+
+# Czas uruchamiania ETL (format HH:MM, 24-godz)
+# Domyślnie 2:00 AM (02:00)
+SCHEDULE_TIME=02:00
+
+# Czy włączyć automatyczne uruchamianie schedulera
+ENABLE_SCHEDULER=true
+
+# ================================================================================
+# SERWER (OPCJONALNIE - dla REST API)
+# ================================================================================
+
+# Port dla REST API
+PORT=3000
+
+# Host
+HOST=localhost
+
+# ================================================================================
+# NOTKI DLA UŻYTKOWNIKA
+# ================================================================================
+
+# WAŻNE:
+# 1. Skopiuj ten plik na .env
+# 2. Dostosuj MONGODB_URI - wstaw swoje dane (user:password@cluster)
+# 3. Sprawdź czy ścieżki CSV są prawidłowe
+# 4. Nigdy nie pushuj .env na GitHub
+# 5. Jeśli zagubisz hasło, resetuj je w MongoDB Atlas
+
+# TESTOWANIE POŁĄCZENIA:
+# python -c "import pymongo; client = pymongo.MongoClient('MONGODB_URI'); print(client.admin.command('ping'))"
+
+# GIT SECURITY:
+# Dodaj do .gitignore:
+# .env
+# .env.local
+# *.key
+# *.pem

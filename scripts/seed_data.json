@@ -1,0 +1,26 @@
+[
+  {
+    "schemaVersion": 1,
+    "source": {
+      "name": "kaggle_csv",
+      "type": "csv",
+      "externalId": "536365"
+    },
+    "ingestedAt": "2024-01-15T10:30:00Z",
+    "eventTime": "2010-12-01T00:00:00Z",
+    "entity": {
+      "id": "17850",
+      "type": "customer"
+    },
+    "metrics": {
+      "amount": 15.30,
+      "count": 6,
+      "unitPrice": 2.55
+    },
+    "metadata": {
+      "description": "WHITE HANGING HEART T-LIGHT HOLDER",
+      "stockCode": "85123A",
+      "country": "United Kingdom"
+    }
+  }
+]
