@@ -1,3 +1,7 @@
+"""
+Daily ETL scheduler - runs the ETL pipeline at a scheduled time every day.
+"""
+
 import schedule
 import time
 import os
@@ -10,22 +14,19 @@ load_dotenv()
 SCHEDULE_TIME = os.getenv('SCHEDULE_TIME', '02:00')
 
 def run_etl():
-    """Uruchom ETL pipeline"""
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    print(f'\n⏰ {now} - Uruchamianie ETL...')
+    print(f'\n⏰ {now} - Running ETL pipeline...')
     subprocess.run(['python', 'scripts/etl_pipeline.py'])
 
-# Zaplanuj ETL
 schedule.every().day.at(SCHEDULE_TIME).do(run_etl)
 
-print(f'📅 Scheduler uruchomiony.')
-print(f'   ETL będzie uruchamiany codziennie o {SCHEDULE_TIME}')
-print(f'   (Wciśnij Ctrl+C aby zatrzymać)\n')
+print(f'📅 Scheduler started.')
+print(f'   ETL will run daily at {SCHEDULE_TIME}')
+print(f'   (Press Ctrl+C to stop)\n')
 
-# Główna pętla
 try:
     while True:
         schedule.run_pending()
         time.sleep(60)
 except KeyboardInterrupt:
-    print('\n🛑 Scheduler wyłączony')
+    print('\n🛑 Scheduler stopped')
