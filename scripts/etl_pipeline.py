@@ -1,15 +1,17 @@
+"""
+ETL Pipeline - loads data from three CSV sources into MongoDB, transforms them, and prints progress and statistics.
+"""
+
 import pandas as pd
 import pymongo
 import os
 import time
 from datetime import datetime, timezone
 
-# === CONFIG ===
 MONGODB_URI = "mongodb+srv://janduczek_db_user:B2LTZ7stECMF2jg8@dev-cluster.cuerdh8.mongodb.net/?appName=dev-cluster"
 DB_NAME = "analytics"
 COLLECTION = "records"
 
-# CSV FILES
 CSV_FILES = {
     'source1': {
         'path': 'data/online_retail.csv',
@@ -32,14 +34,13 @@ BATCH_SIZE = 5000
 CHUNK_SIZE = 50000
 
 def load_csv_source1(client, csv_path):
-    """Źródło 1: Online Retail Dataset"""
     db = client[DB_NAME]
     col = db[COLLECTION]
     
-    print(f'📂 Źródło 1: Online Retail\n')
+    print(f'📂 Source 1: Online Retail\n')
     
     if not os.path.exists(csv_path):
-        print(f'❌ Plik nie znaleziony: {csv_path}')
+        print(f'❌ File not found: {csv_path}')
         return 0
     
     total_inserted = 0
@@ -49,7 +50,7 @@ def load_csv_source1(client, csv_path):
     for chunk_num, df_chunk in enumerate(chunks):
         docs = []
         
-        for idx, row in df_chunk.iterrows():
+        for _, row in df_chunk.iterrows():
             quantity = int(row['Quantity']) if pd.notna(row['Quantity']) else 0
             unit_price = float(row['UnitPrice']) if pd.notna(row['UnitPrice']) else 0.0
             
@@ -89,22 +90,21 @@ def load_csv_source1(client, csv_path):
                 print(f'  ✅ Chunk {chunk_num + 1}: {len(docs)} docs | '
                       f'Total: {total_inserted:,} | Rate: {rate:.0f} docs/sec')
             except Exception as e:
-                print(f'  ❌ Błąd w batch {chunk_num}: {e}')
+                print(f'  ❌ Error in chunk {chunk_num}: {e}')
     
     elapsed = time.time() - start_time
-    print(f'✅ Źródło 1 ukończone: {total_inserted:,} rekordów w {elapsed:.2f}s\n')
+    print(f'✅ Source 1 completed: {total_inserted:,} records in {elapsed:.2f}s\n')
     return total_inserted
 
 
 def load_csv_source2(client, csv_path):
-    """Źródło 2: Sales Data"""
     db = client[DB_NAME]
     col = db[COLLECTION]
     
-    print(f'📂 Źródło 2: Sales Data\n')
+    print(f'📂 Source 2: Sales Data\n')
     
     if not os.path.exists(csv_path):
-        print(f'❌ Plik nie znaleziony: {csv_path}')
+        print(f'❌ File not found: {csv_path}')
         return 0
     
     total_inserted = 0
@@ -115,7 +115,6 @@ def load_csv_source2(client, csv_path):
         docs = []
         
         for idx, row in df.iterrows():
-            # Dostosuj pola do struktury sales_data.csv
             amount = float(row.get('amount', 0)) if pd.notna(row.get('amount')) else 0.0
             
             doc = {
@@ -145,7 +144,6 @@ def load_csv_source2(client, csv_path):
             docs.append(doc)
         
         if docs:
-            # Insert w batches
             for i in range(0, len(docs), BATCH_SIZE):
                 batch = docs[i:i+BATCH_SIZE]
                 try:
@@ -156,25 +154,24 @@ def load_csv_source2(client, csv_path):
                     print(f'  ✅ Batch {i//BATCH_SIZE + 1}: {len(batch)} docs | '
                           f'Total: {total_inserted:,} | Rate: {rate:.0f} docs/sec')
                 except Exception as e:
-                    print(f'  ❌ Błąd w batch: {e}')
+                    print(f'  ❌ Error in batch: {e}')
     
     except Exception as e:
-        print(f'❌ Błąd czytania CSV: {e}')
+        print(f'❌ Error reading CSV: {e}')
     
     elapsed = time.time() - start_time
-    print(f'✅ Źródło 2 ukończone: {total_inserted:,} rekordów w {elapsed:.2f}s\n')
+    print(f'✅ Source 2 completed: {total_inserted:,} records in {elapsed:.2f}s\n')
     return total_inserted
 
 
 def load_csv_source3(client, csv_path):
-    """Źródło 3: Customers"""
     db = client[DB_NAME]
     col = db[COLLECTION]
     
-    print(f'📂 Źródło 3: Customers\n')
+    print(f'📂 Source 3: Customers\n')
     
     if not os.path.exists(csv_path):
-        print(f'❌ Plik nie znaleziony: {csv_path}')
+        print(f'❌ File not found: {csv_path}')
         return 0
     
     total_inserted = 0
@@ -214,7 +211,6 @@ def load_csv_source3(client, csv_path):
             docs.append(doc)
         
         if docs:
-            # Insert w batches
             for i in range(0, len(docs), BATCH_SIZE):
                 batch = docs[i:i+BATCH_SIZE]
                 try:
@@ -225,19 +221,18 @@ def load_csv_source3(client, csv_path):
                     print(f'  ✅ Batch {i//BATCH_SIZE + 1}: {len(batch)} docs | '
                           f'Total: {total_inserted:,} | Rate: {rate:.0f} docs/sec')
                 except Exception as e:
-                    print(f'  ❌ Błąd w batch: {e}')
+                    print(f'  ❌ Error in batch: {e}')
     
     except Exception as e:
-        print(f'❌ Błąd czytania CSV: {e}')
+        print(f'❌ Error reading CSV: {e}')
     
     elapsed = time.time() - start_time
-    print(f'✅ Źródło 3 ukończone: {total_inserted:,} rekordów w {elapsed:.2f}s\n')
+    print(f'✅ Source 3 completed: {total_inserted:,} records in {elapsed:.2f}s\n')
     return total_inserted
 
 
 def run_etl():
-    """Uruchom ETL dla wszystkich 3 źródeł"""
-    print('🚀 ETL Pipeline - 3 Źródła Danych\n')
+    print('🚀 ETL Pipeline - 3 Data Sources\n')
     print('=' * 60)
     
     client = pymongo.MongoClient(MONGODB_URI)
@@ -245,40 +240,35 @@ def run_etl():
     grand_total = 0
     grand_start = time.time()
     
-    # Źródło 1
     total1 = load_csv_source1(client, CSV_FILES['source1']['path'])
     grand_total += total1
     
-    # Źródło 2
     total2 = load_csv_source2(client, CSV_FILES['source2']['path'])
     grand_total += total2
     
-    # Źródło 3
     total3 = load_csv_source3(client, CSV_FILES['source3']['path'])
     grand_total += total3
     
-    # Statystyka
     grand_elapsed = time.time() - grand_start
     print('=' * 60)
-    print(f'\n📊 PODSUMOWANIE ETL:')
-    print(f'  Źródło 1 (Online Retail): {total1:,} dokumentów')
-    print(f'  Źródło 2 (Sales Data):    {total2:,} dokumentów')
-    print(f'  Źródło 3 (Customers):     {total3:,} dokumentów')
+    print(f'\n📊 ETL SUMMARY:')
+    print(f'  Source 1 (Online Retail): {total1:,} documents')
+    print(f'  Source 2 (Sales Data):    {total2:,} documents')
+    print(f'  Source 3 (Customers):     {total3:,} documents')
     print(f'  ─────────────────────────────────')
-    print(f'  RAZEM:                    {grand_total:,} dokumentów')
-    print(f'  Czas: {grand_elapsed:.2f}s')
-    print(f'  Szybkość: {grand_total/grand_elapsed:.0f} docs/sec')
+    print(f'  TOTAL:                     {grand_total:,} documents')
+    print(f'  Time: {grand_elapsed:.2f}s')
+    print(f'  Speed: {grand_total/grand_elapsed:.0f} docs/sec')
     
-    # Collection stats
     db = client[DB_NAME]
     col = db[COLLECTION]
     stats = db.command('collStats', COLLECTION)
-    print(f'\n📈 Statystyka kolekcji:')
-    print(f'  Dokumenty: {stats["count"]:,}')
-    print(f'  Rozmiar: {stats["size"] / (1024**2):.2f} MB')
+    print(f'\n📈 Collection Stats:')
+    print(f'  Documents: {stats["count"]:,}')
+    print(f'  Size: {stats["size"] / (1024**2):.2f} MB')
     
     client.close()
-    print(f'\n✅ ETL zakończony!')
+    print(f'\n✅ ETL Completed!')
 
 
 if __name__ == '__main__':
