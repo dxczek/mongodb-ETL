@@ -1,0 +1,4 @@
+pymongo==3.11.0
+pandas==2.3.3
+streamlit==1.28.1
+plotly==5.17.0
