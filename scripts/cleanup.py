@@ -1,37 +1,37 @@
+"""
+Duplicate cleanup script - removes duplicate documents from a MongoDB collection or optionally drops the entire collection to free space.
+"""
+
 import pymongo
 
-# === WSTAW SWOJE DANE TUTAJ ===
 MONGO_URI = "mongodb+srv://janduczek_db_user:B2LTZ7stECMF2jg8@dev-cluster.cuerdh8.mongodb.net/?appName=dev-cluster"
 DB_NAME = "analytics"
 COLLECTION = "records"
 
 def cleanup_duplicates():
-    """Usuń duplikaty - zachowaj tylko jedno copie dokumentu"""
     client = pymongo.MongoClient(MONGO_URI)
     db = client[DB_NAME]
     col = db[COLLECTION]
     
-    print('🧹 Czyszczenie duplikatów...\n')
+    print('🧹 Cleaning up duplicates...\n')
     
-    # Sprawdź ile dokumenów jest teraz
     total_before = col.count_documents({})
-    print(f'Dokumenty przed: {total_before:,}')
+    print(f'Documents before: {total_before:,}')
     
-    # Usuń całą kolekcję i załaduj jeszcze raz
-    print('\n⚠️  Czy chcesz usunąć całą kolekcję?')
-    print('   (To zwolni miejsce - najszybciej)\n')
+    print('\n⚠️  Do you want to drop the entire collection?')
+    print('   (This will free space and is the fastest way)\n')
     
-    response = input('Wpisz TAK aby usunąć: ')
+    response = input('Type YES to drop: ')
     
-    if response.upper() == 'TAK':
+    if response.upper() == 'YES':
         col.drop()
-        print('✅ Kolekcja usunięta - zwolniono miejsce!')
-        print('\nTeraz uruchom:')
+        print('✅ Collection dropped - space freed!')
+        print('\nNow run:')
         print('  python scripts/etl_pipeline.py')
         client.close()
         return
     
-    print('Anulowano')
+    print('Cancelled')
     client.close()
 
 if __name__ == '__main__':
